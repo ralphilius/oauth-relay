@@ -50,9 +50,9 @@ JSON mapping app IDs to their allowed origin suffix:
 ### Secrets
 
 ```bash
-# One signing key per app. The dashboard must have the same key set as
-# OAUTH_RELAY_SIGNING_KEY.
-npx wrangler secret put APP_SECRET_anys3
+# The shared HMAC signing key. The dashboard must have the same value
+# set as OAUTH_RELAY_SIGNING_KEY.
+npx wrangler secret put OAUTH_RELAY_SIGNING_KEY
 ```
 
 ### Custom domain
@@ -78,6 +78,5 @@ pnpm typecheck   # type-check
 ## Adding a new app
 
 1. Add the app to the `APPS` var in `wrangler.jsonc`.
-2. Set `APP_SECRET_<appId>` via `wrangler secret put`.
-3. Share the same secret with the app as its relay signing key.
-4. Add `https://<relay-domain>/callback` to the app's Google OAuth redirect URIs.
+2. Share the existing `OAUTH_RELAY_SIGNING_KEY` with the app.
+3. Add `https://<relay-domain>/callback` to the app's Google OAuth redirect URIs.

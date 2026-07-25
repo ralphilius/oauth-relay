@@ -10,7 +10,7 @@ function makeEnv(overrides: Partial<RelayEnv> = {}): RelayEnv {
     APPS: JSON.stringify({
       anys3: { allowedOriginSuffix: ".anys3-dashboard.example.workers.dev" }
     }),
-    APP_SECRET_anys3: SIGNING_KEY,
+    OAUTH_RELAY_SIGNING_KEY: SIGNING_KEY,
     ...overrides
   };
 }
@@ -111,25 +111,6 @@ describe("relay handler", () => {
     const state = createRelayState({
       appId: "anys3",
       targetOrigin: "https://evil.example.com",
-      callbackPath: "/api/auth/callback/google",
-      appState: "app-state-payload",
-      signingKey: SIGNING_KEY
-    });
-
-    const response = await handler(
-      makeRequest(`https://oauth-relay.example.com/callback?code=test-code&state=${state}`),
-      env
-    );
-
-    expect(response.status).toBe(400);
-  });
-
-  it("returns 400 when the signing key for the app is not configured", async () => {
-    const env = makeEnv({ APP_SECRET_anys3: undefined as unknown as string });
-    const handler = createRelayHandler();
-    const state = createRelayState({
-      appId: "anys3",
-      targetOrigin: "https://preview.anys3-dashboard.example.workers.dev",
       callbackPath: "/api/auth/callback/google",
       appState: "app-state-payload",
       signingKey: SIGNING_KEY

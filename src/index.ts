@@ -3,7 +3,7 @@ import { validateRelayState, RelayStateError } from "./state";
 
 export type RelayEnv = {
   APPS: string;
-  [key: `APP_SECRET_${string}`]: string;
+  OAUTH_RELAY_SIGNING_KEY: string;
 };
 
 export type RelayRequestHandler = (request: Request, env: RelayEnv) => Promise<Response>;
@@ -31,32 +31,9 @@ export function createRelayHandler(): RelayRequestHandler {
     }
     const registry = createAppRegistry(entries);
 
-    const [encodedPayload] = state.split(".");
-    if (!encodedPayload) {
-      return new Response("Malformed state", { status: 400 });
-    }
-
-    let appId: string;
-    try {
-      const payload = JSON.parse(
-        Buffer.from(encodedPayload, "base64url").toString("utf8")
-      ) as { appId?: unknown };
-      if (typeof payload.appId !== "string") {
-        return new Response("Malformed state", { status: 400 });
-      }
-      appId = payload.appId;
-    } catch {
-      return new Response("Malformed state", { status: 400 });
-    }
-
-    const signingKey = env[`APP_SECRET_${appId}`];
-    if (!signingKey) {
-      return new Response("Unknown app", { status: 400 });
-    }
-
     let payload;
     try {
-      payload = validateRelayState(state, { signingKey });
+      payload = validateRelayState(state, { signingKey: env.OAUTH_RELAY_SIGNING_KEY });
     } catch (error) {
       if (error instanceof RelayStateError) {
         return new Response("Invalid state", { status: 400 });

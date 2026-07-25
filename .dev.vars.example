@@ -1,0 +1,2 @@
+APPS={"anys3":{"allowedOriginSuffix":".anys3-dashboard.ralphilius.workers.dev"}}
+OAUTH_RELAY_SIGNING_KEY=your-signing-key-here

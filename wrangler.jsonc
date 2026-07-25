@@ -2,6 +2,7 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "anys3-oauth-relay",
   "main": "src/index.ts",
+  "account_id": "99fb96dc4e6b0e7db5a2c77a5e26a329",
   "compatibility_date": "2026-07-23",
   "compatibility_flags": ["nodejs_compat"],
   "routes": [
