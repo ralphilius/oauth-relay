@@ -1,0 +1,21 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "anys3-oauth-relay",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-07-23",
+  "compatibility_flags": ["nodejs_compat"],
+  "routes": [
+    {
+      // Custom domain for the OAuth relay. Add this hostname in the
+      // Cloudflare dashboard before deploying.
+      "pattern": "oauth-relay.ralphilius.com",
+      "custom_domain": true
+    }
+  ],
+  "vars": {
+    // App registry: appId -> { allowedOriginSuffix }. The signing key for
+    // each app is stored separately as APP_SECRET_<appId> via
+    // `wrangler secret put` and is NOT included here.
+    "APPS": "{\"anys3\":{\"allowedOriginSuffix\":\".anys3-dashboard.ralphilius.workers.dev\"}}"
+  }
+}
