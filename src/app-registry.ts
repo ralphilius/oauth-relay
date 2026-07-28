@@ -18,10 +18,13 @@ export function createAppRegistry(entries: Record<string, AppRegistryEntry>): Ap
 
       try {
         const host = new URL(targetOrigin).hostname;
-        // Require the host to be strictly longer than the suffix so the bare
-        // worker URL (no branch prefix) is not treated as a valid target.
-        return host.endsWith(entry.allowedOriginSuffix)
-          && host.length > entry.allowedOriginSuffix.length;
+        const suffix = entry.allowedOriginSuffix;
+        // Require a delimiter (- or .) before the suffix so hostnames like
+        // "fooanys3-dashboard..." don't match, and require the host to be
+        // strictly longer than the suffix so the bare worker URL is rejected.
+        if (!host.endsWith(suffix) || host.length <= suffix.length) return false;
+        const precedingChar = host[host.length - suffix.length - 1];
+        return precedingChar === "-" || precedingChar === ".";
       } catch {
         return false;
       }

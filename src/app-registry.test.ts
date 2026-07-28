@@ -36,6 +36,16 @@ describe("app registry", () => {
     ).toBe(false);
   });
 
+  it("rejects a hostname that ends with the suffix but has no delimiter before it", () => {
+    const registry = createAppRegistry(ENTRIES);
+
+    // "fooanys3-dashboard..." ends with the suffix but the char before it
+    // is "o", not "-" or ".", so it must not match.
+    expect(
+      registry.isOriginAllowed("anys3", "https://fooanys3-dashboard.example.workers.dev")
+    ).toBe(false);
+  });
+
   it("rejects a target origin that does not end with the app's allowed suffix", () => {
     const registry = createAppRegistry(ENTRIES);
 
