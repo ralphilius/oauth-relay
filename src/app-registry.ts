@@ -18,7 +18,10 @@ export function createAppRegistry(entries: Record<string, AppRegistryEntry>): Ap
 
       try {
         const host = new URL(targetOrigin).hostname;
-        return host.endsWith(entry.allowedOriginSuffix);
+        // Require the host to be strictly longer than the suffix so the bare
+        // worker URL (no branch prefix) is not treated as a valid target.
+        return host.endsWith(entry.allowedOriginSuffix)
+          && host.length > entry.allowedOriginSuffix.length;
       } catch {
         return false;
       }

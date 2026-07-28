@@ -17,6 +17,6 @@
     // App registry: appId -> { allowedOriginSuffix }. The signing key for
     // each app is stored separately as APP_SECRET_<appId> via
     // `wrangler secret put` and is NOT included here.
-    "APPS": "{\"anys3\":{\"allowedOriginSuffix\":\".anys3-dashboard.ralphilius.workers.dev\"}}"
+    "APPS": "{\"anys3\":{\"allowedOriginSuffix\":\"anys3-dashboard.ralphilius.workers.dev\"}}"
   }
 }

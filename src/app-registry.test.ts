@@ -3,15 +3,15 @@ import { describe, expect, it } from "vitest";
 import { createAppRegistry, type AppRegistryEntry } from "./app-registry";
 
 const ENTRIES: Record<string, AppRegistryEntry> = {
-  anys3: { allowedOriginSuffix: ".anys3-dashboard.example.workers.dev" },
-  other: { allowedOriginSuffix: ".other-app.example.workers.dev" }
+  anys3: { allowedOriginSuffix: "anys3-dashboard.example.workers.dev" },
+  other: { allowedOriginSuffix: "other-app.example.workers.dev" }
 };
 
 describe("app registry", () => {
   it("returns the entry for a known app id", () => {
     const registry = createAppRegistry(ENTRIES);
 
-    expect(registry.get("anys3")?.allowedOriginSuffix).toBe(".anys3-dashboard.example.workers.dev");
+    expect(registry.get("anys3")?.allowedOriginSuffix).toBe("anys3-dashboard.example.workers.dev");
   });
 
   it("returns undefined for an unknown app id", () => {
@@ -24,8 +24,16 @@ describe("app registry", () => {
     const registry = createAppRegistry(ENTRIES);
 
     expect(
-      registry.isOriginAllowed("anys3", "https://preview.anys3-dashboard.example.workers.dev")
+      registry.isOriginAllowed("anys3", "https://some-branch-anys3-dashboard.example.workers.dev")
     ).toBe(true);
+  });
+
+  it("rejects the bare worker hostname (no branch prefix)", () => {
+    const registry = createAppRegistry(ENTRIES);
+
+    expect(
+      registry.isOriginAllowed("anys3", "https://anys3-dashboard.example.workers.dev")
+    ).toBe(false);
   });
 
   it("rejects a target origin that does not end with the app's allowed suffix", () => {
@@ -40,7 +48,7 @@ describe("app registry", () => {
     const registry = createAppRegistry(ENTRIES);
 
     expect(
-      registry.isOriginAllowed("anys3", "https://preview.other-app.example.workers.dev")
+      registry.isOriginAllowed("anys3", "https://some-branch-other-app.example.workers.dev")
     ).toBe(false);
   });
 
@@ -48,13 +56,13 @@ describe("app registry", () => {
     const registry = createAppRegistry(ENTRIES);
 
     expect(
-      registry.isOriginAllowed("unknown", "https://preview.anys3-dashboard.example.workers.dev")
+      registry.isOriginAllowed("unknown", "https://some-branch-anys3-dashboard.example.workers.dev")
     ).toBe(false);
   });
 
   it("rejects a suffix that is a substring match but not a domain suffix", () => {
     const registry = createAppRegistry({
-      anys3: { allowedOriginSuffix: ".anys3-dashboard.example.workers.dev" }
+      anys3: { allowedOriginSuffix: "anys3-dashboard.example.workers.dev" }
     });
 
     // Suffix appears as a substring but the host does not end with it as a

@@ -8,7 +8,7 @@ const SIGNING_KEY = "test-signing-key";
 function makeEnv(overrides: Partial<RelayEnv> = {}): RelayEnv {
   return {
     APPS: JSON.stringify({
-      anys3: { allowedOriginSuffix: ".anys3-dashboard.example.workers.dev" }
+      anys3: { allowedOriginSuffix: "anys3-dashboard.example.workers.dev" }
     }),
     OAUTH_RELAY_SIGNING_KEY: SIGNING_KEY,
     ...overrides
@@ -25,7 +25,7 @@ describe("relay handler", () => {
     const handler = createRelayHandler();
     const state = createRelayState({
       appId: "anys3",
-      targetOrigin: "https://preview.anys3-dashboard.example.workers.dev",
+      targetOrigin: "https://previewanys3-dashboard.example.workers.dev",
       callbackPath: "/api/auth/callback/google",
       appState: "app-state-payload",
       signingKey: SIGNING_KEY
@@ -39,7 +39,7 @@ describe("relay handler", () => {
     expect(response.status).toBe(302);
     const location = response.headers.get("location");
     expect(location).toBe(
-      "https://preview.anys3-dashboard.example.workers.dev/api/auth/callback/google?code=test-code&state=app-state-payload"
+      "https://previewanys3-dashboard.example.workers.dev/api/auth/callback/google?code=test-code&state=app-state-payload"
     );
   });
 
@@ -48,7 +48,7 @@ describe("relay handler", () => {
     const handler = createRelayHandler();
     const state = createRelayState({
       appId: "anys3",
-      targetOrigin: "https://preview.anys3-dashboard.example.workers.dev",
+      targetOrigin: "https://previewanys3-dashboard.example.workers.dev",
       callbackPath: "/api/auth/callback/google",
       appState: "app-state-payload",
       signingKey: SIGNING_KEY
@@ -91,7 +91,7 @@ describe("relay handler", () => {
     const handler = createRelayHandler();
     const state = createRelayState({
       appId: "unknown-app",
-      targetOrigin: "https://preview.anys3-dashboard.example.workers.dev",
+      targetOrigin: "https://previewanys3-dashboard.example.workers.dev",
       callbackPath: "/api/auth/callback/google",
       appState: "app-state-payload",
       signingKey: SIGNING_KEY
@@ -141,7 +141,7 @@ describe("relay handler", () => {
     const handler = createRelayHandler();
     const state = createRelayState({
       appId: "anys3",
-      targetOrigin: "https://preview.anys3-dashboard.example.workers.dev",
+      targetOrigin: "https://previewanys3-dashboard.example.workers.dev",
       callbackPath: "/api/providers/google-drive/callback",
       appState: "drive-state-payload",
       signingKey: SIGNING_KEY
@@ -156,7 +156,7 @@ describe("relay handler", () => {
     const location = response.headers.get("location");
     const parsed = new URL(location!);
     expect(parsed.origin + parsed.pathname).toBe(
-      "https://preview.anys3-dashboard.example.workers.dev/api/providers/google-drive/callback"
+      "https://previewanys3-dashboard.example.workers.dev/api/providers/google-drive/callback"
     );
     expect(parsed.searchParams.get("code")).toBe("test-code");
     expect(parsed.searchParams.get("state")).toBe("drive-state-payload");
