@@ -89,11 +89,12 @@ pnpm typecheck   # type-check
 
 ## Onboarding a new app
 
-1. **Client code:** copy `client/index.ts` into the app (or mirror it like
-   `anys3/packages/dashboard/src/auth/` and `sheetson/apps/site/lib/auth/`).
-   It exposes `createRelayState`, `isPreviewHostname`,
-   `getRelayContextForRequest`, and nonce helpers — ~120 lines, no deps beyond
-   `node:crypto`.
+1. **Client package:** `pnpm add "github:ralphilius/oauth-relay#<sha>&path:packages/client"`
+   (dist/ is committed — no build step), or `pnpm add oauth-relay-client` once
+   it's on npm. Exposes `startRelaySignIn`, `handleRelayCallback`,
+   `consumeRelayCredential`, `createRelayState`, `isPreviewHostname`,
+   `getRelayContextForRequest` — fetch-level handlers you delegate to from
+   your routes. Reference wiring: `sheetson/apps/site/app/api/auth/google/`.
 2. **Worker vars** on the app: `OAUTH_RELAY_CALLBACK_URL=https://<relay-domain>/callback`,
    `OAUTH_RELAY_APP_ID=<slug>`, `PREVIEW_HOSTNAME_SUFFIX=<worker>.<subdomain>.workers.dev`.
 3. **Secret:** `wrangler secret put OAUTH_RELAY_SIGNING_KEY` on the app — same
