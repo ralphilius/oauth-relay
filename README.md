@@ -89,7 +89,7 @@ pnpm typecheck   # type-check
 
 ## Onboarding a new app
 
-1. **Client package:** `pnpm add "github:ralphilius/oauth-relay#<sha>&path:packages/client"`
+1. **Client package:** `pnpm add "git+ssh://git@github.com/ralphilius/oauth-relay.git#<sha>&path:packages/client"`
    (dist/ is committed — no build step), or `pnpm add oauth-relay-client` once
    it's on npm. Exposes `startRelaySignIn`, `handleRelayCallback`,
    `consumeRelayCredential`, `createRelayState`, `isPreviewHostname`,
