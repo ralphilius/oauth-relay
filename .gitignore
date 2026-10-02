@@ -1,5 +1,8 @@
 node_modules/
 dist/
+# packages/client/dist stays tracked (force-added) — git-dependency
+# consumers get built output with no build step.
+!packages/client/dist/
 .wrangler/
 .dev.vars
 *.log
