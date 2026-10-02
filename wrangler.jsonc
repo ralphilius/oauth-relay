@@ -14,9 +14,11 @@
     }
   ],
   "vars": {
-    // App registry: appId -> { allowedOriginSuffix }. The signing key for
-    // each app is stored separately as APP_SECRET_<appId> via
-    // `wrangler secret put` and is NOT included here.
-    "APPS": "{\"anys3\":{\"allowedOriginSuffix\":\"anys3-dashboard.ralphilius.workers.dev\"}}"
+    // App registry: appId -> { allowedOriginSuffix }. Allowed suffixes are the
+    // worker's workers.dev hostname (e.g. "sheetson.ralphilius.workers.dev"),
+    // so per-version previews like <prefix>-sheetson.ralphilius.workers.dev
+    // match while the bare worker URL is rejected. The shared signing key is
+    // set via `wrangler secret put OAUTH_RELAY_SIGNING_KEY` and is NOT here.
+    "APPS": "{\"anys3\":{\"allowedOriginSuffix\":\"anys3-dashboard.ralphilius.workers.dev\"},\"sheetson\":{\"allowedOriginSuffix\":\"sheetson.ralphilius.workers.dev\"}}"
   }
 }
