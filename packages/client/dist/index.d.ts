@@ -16,12 +16,13 @@
  *   if (pathname === "/auth/google/callback") return handleRelayCallback(request, { googleClientId, googleClientSecret, env });
  *   if (pathname === "/auth/google/consume")  return consumeRelayCredential();
  */
-export type RelayEnv = {
+export interface RelayEnv {
     OAUTH_RELAY_CALLBACK_URL?: string;
     OAUTH_RELAY_APP_ID?: string;
     OAUTH_RELAY_SIGNING_KEY?: string;
     PREVIEW_HOSTNAME_SUFFIX?: string;
-};
+    [key: string]: string | undefined;
+}
 export type RelayConfig = {
     callbackUrl: string;
     appId: string;
