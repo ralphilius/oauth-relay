@@ -3,6 +3,11 @@ import { validateRelayState, RelayStateError } from "./state";
 
 export type RelayEnv = {
   APPS: string;
+  // Optional JSON array of origin suffixes allowed for ANY app — e.g.
+  // '["ralphilius.workers.dev"]'. Only the account can deploy to its own
+  // workers.dev subdomain, so this safely covers every app's preview host
+  // without a per-app APPS entry.
+  ALLOWED_ORIGIN_SUFFIXES?: string;
   OAUTH_RELAY_SIGNING_KEY: string;
 };
 
@@ -24,12 +29,19 @@ export function createRelayHandler(): RelayRequestHandler {
     }
 
     let entries: Record<string, AppRegistryEntry>;
+    let globalSuffixes: string[] = [];
     try {
       entries = JSON.parse(env.APPS) as Record<string, AppRegistryEntry>;
+      if (env.ALLOWED_ORIGIN_SUFFIXES) {
+        const parsed = JSON.parse(env.ALLOWED_ORIGIN_SUFFIXES);
+        if (Array.isArray(parsed) && parsed.every((s) => typeof s === "string")) {
+          globalSuffixes = parsed;
+        }
+      }
     } catch {
       return new Response("Misconfigured app registry", { status: 500 });
     }
-    const registry = createAppRegistry(entries);
+    const registry = createAppRegistry(entries, globalSuffixes);
 
     let payload;
     try {

@@ -162,3 +162,46 @@ describe("relay handler", () => {
     expect(parsed.searchParams.get("state")).toBe("drive-state-payload");
   });
 });
+
+describe("relay handler with global ALLOWED_ORIGIN_SUFFIXES", () => {
+  const envWithGlobal = () =>
+    makeEnv({
+      APPS: "{}",
+      ALLOWED_ORIGIN_SUFFIXES: JSON.stringify(["example.workers.dev"])
+    });
+
+  it("redirects for an appId with no registry entry when the origin matches a global suffix", async () => {
+    const handler = createRelayHandler();
+    const state = createRelayState({
+      appId: "brand-new-app",
+      targetOrigin: "https://v123-new-app.example.workers.dev",
+      callbackPath: "/api/auth/callback/google",
+      appState: "s",
+      signingKey: SIGNING_KEY
+    });
+    const response = await handler(
+      makeRequest(`https://oauth-relay.example.com/callback?code=c&state=${state}`),
+      envWithGlobal()
+    );
+    expect(response.status).toBe(302);
+    expect(response.headers.get("location")).toBe(
+      "https://v123-new-app.example.workers.dev/api/auth/callback/google?code=c&state=s"
+    );
+  });
+
+  it("still rejects origins outside every allowed suffix", async () => {
+    const handler = createRelayHandler();
+    const state = createRelayState({
+      appId: "any",
+      targetOrigin: "https://evil.attacker.com",
+      callbackPath: "/cb",
+      appState: "s",
+      signingKey: SIGNING_KEY
+    });
+    const response = await handler(
+      makeRequest(`https://oauth-relay.example.com/callback?code=c&state=${state}`),
+      envWithGlobal()
+    );
+    expect(response.status).toBe(400);
+  });
+});

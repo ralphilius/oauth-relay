@@ -82,3 +82,35 @@ describe("app registry", () => {
     ).toBe(false);
   });
 });
+
+describe("global suffixes (ALLOWED_ORIGIN_SUFFIXES)", () => {
+  const GLOBAL = ["example.workers.dev"];
+
+  it("allows any appId whose origin matches a global suffix", () => {
+    const registry = createAppRegistry({}, GLOBAL);
+    expect(
+      registry.isOriginAllowed("brand-new-app", "https://v123-new-app.example.workers.dev")
+    ).toBe(true);
+  });
+
+  it("still rejects the apex hostname for a global suffix", () => {
+    const registry = createAppRegistry({}, GLOBAL);
+    expect(registry.isOriginAllowed("app", "https://example.workers.dev")).toBe(false);
+    expect(registry.isOriginAllowed("app", "https://fooexample.workers.dev")).toBe(false);
+  });
+
+  it("rejects origins outside the global suffixes even for known apps", () => {
+    const registry = createAppRegistry(ENTRIES, GLOBAL);
+    expect(registry.isOriginAllowed("anys3", "https://evil.attacker.com")).toBe(false);
+  });
+
+  it("keeps honoring per-app entries alongside global suffixes", () => {
+    const registry = createAppRegistry(
+      { custom: { allowedOriginSuffix: "preview.custom-app.com" } },
+      GLOBAL
+    );
+    expect(registry.isOriginAllowed("custom", "https://pr-7.preview.custom-app.com")).toBe(true);
+    expect(registry.isOriginAllowed("custom", "https://any.example.workers.dev")).toBe(true);
+    expect(registry.isOriginAllowed("custom", "https://evil.attacker.com")).toBe(false);
+  });
+});

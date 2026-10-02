@@ -31,7 +31,7 @@ Dashboard (preview)          Relay Worker              Google
      │     original state, session ✓                     │
 ```
 
-The dashboard and relay share a single secret (`APP_SECRET_<appId>`). The
+The app and relay share a single secret (`OAUTH_RELAY_SIGNING_KEY`). The
 dashboard uses `createRelayState()` (~20 lines of HMAC signing) to compose the
 relay token locally — no network call to the relay during sign-in start. The
 relay verifies the token with the same secret and redirects to the preview host
@@ -39,19 +39,31 @@ with the original `appState` unwrapped.
 
 ## Configuration
 
-### App registry (`APPS` var)
+### Global suffix allowlist (`ALLOWED_ORIGIN_SUFFIXES` var)
 
-JSON mapping app IDs to their allowed origin suffix:
+JSON array of hostname suffixes any app may relay to — the account's
+`workers.dev` subdomain:
 
 ```json
-{"anys3": {"allowedOriginSuffix": ".anys3-dashboard.<account>.workers.dev"}}
+["ralphilius.workers.dev"]
+```
+
+Only this Cloudflare account can deploy to `*.ralphilius.workers.dev`, so
+listing it covers every app's preview hosts with zero per-app registration.
+
+### Per-app registry (`APPS` var)
+
+JSON mapping app IDs to an extra allowed origin suffix. Only needed when an
+app's preview origins live outside the global suffixes (e.g. a custom domain):
+
+```json
+{"myapp": {"allowedOriginSuffix": "preview.myapp.example.com"}}
 ```
 
 ### Secrets
 
 ```bash
-# The shared HMAC signing key. The dashboard must have the same value
-# set as OAUTH_RELAY_SIGNING_KEY.
+# Shared HMAC signing key — identical value on the relay and every app.
 npx wrangler secret put OAUTH_RELAY_SIGNING_KEY
 ```
 
@@ -75,8 +87,20 @@ pnpm test        # run unit tests
 pnpm typecheck   # type-check
 ```
 
-## Adding a new app
+## Onboarding a new app
 
-1. Add the app to the `APPS` var in `wrangler.jsonc`.
-2. Share the existing `OAUTH_RELAY_SIGNING_KEY` with the app.
-3. Add `https://<relay-domain>/callback` to the app's Google OAuth redirect URIs.
+1. **Client code:** copy `client/index.ts` into the app (or mirror it like
+   `anys3/packages/dashboard/src/auth/` and `sheetson/apps/site/lib/auth/`).
+   It exposes `createRelayState`, `isPreviewHostname`,
+   `getRelayContextForRequest`, and nonce helpers — ~120 lines, no deps beyond
+   `node:crypto`.
+2. **Worker vars** on the app: `OAUTH_RELAY_CALLBACK_URL=https://<relay-domain>/callback`,
+   `OAUTH_RELAY_APP_ID=<slug>`, `PREVIEW_HOSTNAME_SUFFIX=<worker>.<subdomain>.workers.dev`.
+3. **Secret:** `wrangler secret put OAUTH_RELAY_SIGNING_KEY` on the app — same
+   shared value (grab from another app's `.dev.vars` or wherever you store it).
+4. **Google Console:** add `https://<relay-domain>/callback` as an authorized
+   redirect URI on that app's OAuth client (one URI total — shared by every
+   preview host of that app).
+
+For workers.dev previews no relay-side change is needed — the global suffix
+already covers them. APPS entries are only for custom-domain suffixes.

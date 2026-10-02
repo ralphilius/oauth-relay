@@ -14,11 +14,16 @@
     }
   ],
   "vars": {
-    // App registry: appId -> { allowedOriginSuffix }. Allowed suffixes are the
-    // worker's workers.dev hostname (e.g. "sheetson.ralphilius.workers.dev"),
-    // so per-version previews like <prefix>-sheetson.ralphilius.workers.dev
-    // match while the bare worker URL is rejected. The shared signing key is
-    // set via `wrangler secret put OAUTH_RELAY_SIGNING_KEY` and is NOT here.
-    "APPS": "{\"anys3\":{\"allowedOriginSuffix\":\"anys3-dashboard.ralphilius.workers.dev\"},\"sheetson\":{\"allowedOriginSuffix\":\"sheetson.ralphilius.workers.dev\"}}"
+    // Global allowlist: any origin whose hostname ends with one of these
+    // suffixes is a valid relay target for ANY appId. Only this account can
+    // deploy to <subdomain>.workers.dev, so listing it covers every app's
+    // preview host without a per-app APPS entry. New workers.dev apps onboard
+    // with zero relay changes.
+    "ALLOWED_ORIGIN_SUFFIXES": "[\"ralphilius.workers.dev\"]",
+    // App registry: appId -> { allowedOriginSuffix }. Only needed for apps
+    // whose preview origins live outside the global suffixes (e.g. a custom
+    // domain). The shared signing key is set via
+    // `wrangler secret put OAUTH_RELAY_SIGNING_KEY` and is NOT here.
+    "APPS": "{}"
   }
 }
