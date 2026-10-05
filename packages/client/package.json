@@ -1,6 +1,6 @@
 {
   "name": "@ralphilius/oauth-relay-client",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Client helpers for the Cloudflare Workers OAuth relay \u2014 preview-host Google sign-in on dynamic workers.dev hostnames",
   "type": "module",
   "main": "./dist/index.js",
