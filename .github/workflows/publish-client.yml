@@ -15,18 +15,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
           registry-url: 'https://registry.npmjs.org'
 
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Build client
-        run: pnpm --filter @ralphilius/oauth-relay-client build
+      # No install/build: packages/client/dist/ is committed, and `npm publish`
+      # runs `prepublishOnly` — which fails under pnpm 11 ignored-builds policy.
+      # Publish the committed dist/ directly.
 
       - name: Publish to npm (OIDC trusted publishing)
         # No NODE_AUTH_TOKEN — npm CLI >= 11.5.1 exchanges the OIDC token

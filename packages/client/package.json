@@ -33,8 +33,7 @@
     "node": ">=18"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "prepublishOnly": "pnpm build"
+    "build": "tsc -p tsconfig.json"
   },
   "devDependencies": {
     "typescript": "^5.8.2"
