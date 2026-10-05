@@ -1,7 +1,7 @@
 {
   "name": "oauth-relay-client",
   "version": "0.1.0",
-  "description": "Client helpers for the Cloudflare Workers OAuth relay — preview-host Google sign-in",
+  "description": "Client helpers for the Cloudflare Workers OAuth relay — preview-host Google sign-in on dynamic workers.dev hostnames",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -14,6 +14,24 @@
   "files": [
     "dist"
   ],
+  "keywords": [
+    "cloudflare-workers",
+    "oauth",
+    "google-oauth",
+    "workers-preview",
+    "workers.dev",
+    "oauth-relay"
+  ],
+  "homepage": "https://github.com/ralphilius/oauth-relay",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ralphilius/oauth-relay.git",
+    "directory": "packages/client"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "prepublishOnly": "pnpm build"
