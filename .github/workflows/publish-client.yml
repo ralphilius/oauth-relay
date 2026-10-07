@@ -20,9 +20,10 @@ jobs:
           node-version: '22'
           registry-url: 'https://registry.npmjs.org'
 
-      # No install/build: packages/client/dist/ is committed, and `npm publish`
-      # runs `prepublishOnly` — which fails under pnpm 11 ignored-builds policy.
-      # Publish the committed dist/ directly.
+      # npm CLI must be >= 11.5.1 to exchange the OIDC token itself —
+      # Node 22's bundled npm is older. Install latest before publish.
+      - name: Upgrade npm CLI
+        run: npm install -g npm@latest
 
       - name: Publish to npm (OIDC trusted publishing)
         # No NODE_AUTH_TOKEN — npm CLI >= 11.5.1 exchanges the OIDC token
